@@ -11,9 +11,7 @@
     <PackageReleaseNotes>First version, provides 32bit and 64bit sized blittable bitmasks with myriad helper methods to easily set flags.
 Direct use of the masks such as casting or using operators on them will maintain struct immutability. Instance extension methods mutate the mask.</PackageReleaseNotes>
     <PackageTags>bitmask, blittable, unmanaged, helper, flags</PackageTags>
-    <PackageIcon>bitimage-attributioninlicense.png</PackageIcon>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
-    <ApplicationIcon>Resources\bitimage-attributioninlicense.ico</ApplicationIcon>
     <IsPublishable>False</IsPublishable>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateDocumentationFile>False</GenerateDocumentationFile>
@@ -37,10 +35,6 @@ Will compile and function with Unity Burst</Description>
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="Resources\bitimage-attributioninlicense.ico" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="..\license.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
@@ -52,23 +46,11 @@ Will compile and function with Unity Burst</Description>
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="bitimage-attributioninlicense.png">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
     <None Update="license.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
     <None Update="readme.md">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-    <None Update="Resources\bitimage-attributioninlicense.ico">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-    <None Update="Resources\bitimage-attributioninlicense.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
