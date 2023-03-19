@@ -6,90 +6,85 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
 using System;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace BlitMaskGenerators
 {
     [Generator]
     public class BlitMaskGenerator : ISourceGenerator
     {
+        private const string _templateTypeName = "uint";
+
         public void Initialize(GeneratorInitializationContext context) { }
 
         public void Execute(GeneratorExecutionContext context)
         {
             //if ( !Debugger.IsAttached ) Debugger.Launch();
 
-            var compilation = context.Compilation;
-
             string templatesFolder = @"E:\Repositories\BlitMasks\BlitMasksGenerator\Templates\";
             string[] templatePaths = Directory.GetFiles(templatesFolder, "*.cs");
 
-            var templateSyntaxTrees = new List<SyntaxTree>();
+            var templateSourceCode = new Dictionary<string, string>();
 
             foreach ( var templatePath in templatePaths )
             {
-                if ( templatePath.Contains("BlitMaskConstantsTemplate") )
-                {
-                    string fileContents = File.ReadAllText(templatePath, Encoding.UTF8);
-                    SourceText templateCode = SourceText.From(fileContents);
-                    SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(templateCode, CSharpParseOptions.Default, templatePath, context.CancellationToken);
-                    templateSyntaxTrees.Add(syntaxTree);
-                }
+                string fileContents = File.ReadAllText(templatePath);
+
+                templateSourceCode.Add(templatePath, fileContents);
             }
 
-            List<int> SupportedBitSizes = new List<int>() { 8, 16, 32, 64 };
+            List<int> SupportedBitSizes = new List<int>() { 32, 64 };
+
             Dictionary<string, string> pathAndSourceCode = new Dictionary<string, string>();
 
-            foreach ( SyntaxTree syntaxTree in templateSyntaxTrees )
+            foreach ( var template in templateSourceCode )
             {
-                var rootNode = (CompilationUnitSyntax)syntaxTree.GetRoot(context.CancellationToken);
-
                 foreach ( int bitSize in SupportedBitSizes )
                 {
+                    var rootNode = (CompilationUnitSyntax)CSharpSyntaxTree.ParseText(template.Value, CSharpParseOptions.Default, template.Key, Encoding.UTF8).GetRoot(context.CancellationToken);
 
                     Dictionary<string, string> renameMap = new Dictionary<string, string>
                     {
                         { "BlitMaskConstantsTemplate", $"BlitMaskConstants{bitSize}" },
+                        { "BlitMaskExtensionsTemplate", $"BlitMaskExtensions{bitSize}" },
                         { "BlitMaskTemplate", $"BlitMask{bitSize}" },
+                        { "ToUInt32", $"{GenerationHelpers.GetConvertMethodName(bitSize)}" },
                         { "None", $"None{bitSize}" },
                         { "Everything", $"Everything{bitSize}" }
                     };
 
-                    var rewriter = new RenamingRewriter(renameMap.Keys.ToArray(), renameMap.Values.ToArray());
-
-                    var newRoot = (CompilationUnitSyntax)rewriter.Visit(rootNode);
-
-                    string sourceCode = newRoot.ToFullString();
-
-                    if ( syntaxTree.FilePath.Contains("BlitMaskConstantsTemplate") )
+                    if ( GenerationHelpers.MapBitSizeToType(bitSize) is var typeString && _templateTypeName != typeString )
                     {
-                        string onePattern = $"X{(int)(bitSize / 4)}";
+                        var typeRewriter = new TypeChangingRewriter(_templateTypeName, typeString);
 
-                        sourceCode = sourceCode
-                            .Replace(@"0x00000000", GenerationHelpers.GetHexValueForZero(bitSize))
-                            .Replace(@"0xFFFFFFFF", GenerationHelpers.GetHexValueForMax(bitSize))
-                            .Replace(@"0x00000001", "0x" + 1.ToString(onePattern));
+                        rootNode = (CompilationUnitSyntax)typeRewriter.Visit(rootNode);
                     }
 
-                    pathAndSourceCode.Add(templatesFolder + Path.GetFileNameWithoutExtension(syntaxTree.FilePath) + bitSize.ToString() + ".log", sourceCode);
+                    var renamingRewriter = new IdentifierRenamingRewriter(renameMap);
+
+                    rootNode = (CompilationUnitSyntax)renamingRewriter.Visit(rootNode);
+
+                    string sourceCode = rootNode.ToFullString();
+
+                    sourceCode = sourceCode
+                        .Replace(@"0x00000000", GenerationHelpers.GetHexValueForZero(bitSize))
+                        .Replace(@"0xFFFFFFFF", GenerationHelpers.GetHexValueForMax(bitSize))
+                        .Replace("1U", GenerationHelpers.GetValueForOne(bitSize));
+
+                    string fileName = Path.GetFileNameWithoutExtension(template.Key.Replace("Template", $"{bitSize.ToString()}"));
+                    string fileHint = fileName + ".g.cs";
+
+                    pathAndSourceCode.Add(fileHint, sourceCode);
                 }
             }
 
-            foreach ( var path in pathAndSourceCode.Keys )
+            foreach ( var sourceTextKey in pathAndSourceCode.Keys )
             {
-                using var fs = File.OpenWrite(path);
-                {
-                    string sourceCode = pathAndSourceCode[path];
-                    fs.Write(Encoding.UTF8.GetBytes(sourceCode), 0, sourceCode.Length);
-                }
+                context.AddSource(sourceTextKey, pathAndSourceCode[sourceTextKey]);
             }
         }
     }
@@ -119,91 +114,220 @@ namespace BlitMaskGenerators
                 default: throw new ArgumentException($"Unsupported bit size: {bitSize}", nameof(bitSize));
             }
         }
-    }
 
-    public class RenamingRewriter : CSharpSyntaxRewriter
-    {
-#pragma warning disable CS8603 // Possible null reference return.
-        private string[] oldNames;
-        private string[] newNames;
-
-        public RenamingRewriter(string[] oldNames, string[] newNames)
+        /// <summary>
+        /// TODO; Since byte and ushort don't have a literal suffix or any other apparent
+        /// way to assign them to variables for the purposes of Roslyn type identification
+        /// Need another way to make the compiled code to not use casts, symbolic setting with SyntaxReceiver maybe?
+        /// Sure is great they wanted to "preserve" characters o.9
+        /// </summary>
+        /// <param name="bitSize"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        public static string GetValueForOne(int bitSize)
         {
-            // Check that both arrays have the same length
-            if ( oldNames.Length != newNames.Length )
+            switch ( bitSize )
             {
-                throw new ArgumentException("Error: The number of old names and new names must match.");
+                case 8: return "0b00000001";
+                case 16: return "0x0001";
+                case 32: return "1U";
+                case 64: return "1UL";
+                default: throw new ArgumentException($"Unsupported bit size: {bitSize}", nameof(bitSize));
             }
-
-            this.oldNames = oldNames;
-            this.newNames = newNames;
         }
 
-        public override SyntaxNode VisitClassDeclaration(ClassDeclarationSyntax node)
+        public static string GetConvertMethodName(int bitSize)
         {
-            // Loop through all the old names and check if they match the class name
-            for ( int i = 0; i < oldNames.Length; i++ )
+            switch ( bitSize )
             {
-                if ( node.Identifier.Text == oldNames[i] )
+                case 8:
+                    return "ToByte";
+                case 16:
+                    return "ToUInt16";
+                case 32:
+                    return "ToUInt32";
+                case 64:
+                    return "ToUInt64";
+                default:
+                    throw new ArgumentException("Invalid bit size", nameof(bitSize));
+            }
+        }
+
+        public static string MapBitSizeToType(int bitSize)
+        {
+            switch ( bitSize )
+            {
+                case 8: return "byte";
+                case 16: return "ushort";
+                case 32: return "uint";
+                case 64: return "ulong";
+                default: throw new ArgumentException($"Unsupported bit size: {bitSize}", nameof(bitSize));
+            }
+        }
+    }
+
+    public class TypeChangingRewriter : CSharpSyntaxRewriter
+    {
+#pragma warning disable CS8603 // Possible null reference return.
+        private string _oldTypeName;
+        private string _newTypeName;
+
+        public TypeChangingRewriter(string templateType, string replaceWithType)
+        {
+            this._oldTypeName = templateType;
+            this._newTypeName = replaceWithType;
+        }
+
+        public override SyntaxNode? VisitConversionOperatorDeclaration(ConversionOperatorDeclarationSyntax node)
+        {
+            if ( node.Type.ToString() == _oldTypeName )
+            {
+                var newType = SyntaxFactory.ParseTypeName(_newTypeName).WithTriviaFrom(node.Type);
+
+                node = node.Update(node.AttributeLists,
+                    node.Modifiers,
+                    node.ImplicitOrExplicitKeyword,
+                    node.OperatorKeyword,
+                    newType,
+                    node.ParameterList,
+                    node.Body,
+                    node.ExpressionBody,
+                    node.SemicolonToken);
+            }
+
+            return base.VisitConversionOperatorDeclaration(node);
+        }
+
+        public override SyntaxNode VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
+        {
+            var parameterList = node.ParameterList;
+
+            var newParameterList = SyntaxFactory.ParameterList();
+
+            foreach ( var parameter in parameterList.Parameters )
+            {
+                if ( parameter.Type.ToString() == _oldTypeName )
                 {
-                    // Replace it with the corresponding new name
-                    node = node.ReplaceToken(node.Identifier, SyntaxFactory.Identifier(newNames[i]));
-                    break; // Exit the loop once a match is found
+                    var newParameter = parameter
+                        .WithType(SyntaxFactory.ParseTypeName(_newTypeName).WithTriviaFrom(parameter.Type))
+                        .WithIdentifier(parameter.Identifier)
+                        .WithTriviaFrom(parameter);
+
+                    newParameterList = newParameterList.AddParameters(newParameter);
+                }
+                else
+                {
+                    newParameterList = newParameterList.AddParameters(parameter);
                 }
             }
 
-            // Visit any nested classes
+            node = node.WithParameterList(newParameterList);
+
+            return base.VisitConstructorDeclaration(node);
+        }
+
+        public override SyntaxNode VisitVariableDeclaration(VariableDeclarationSyntax node)
+        {
+            if ( node.Type.ToString() == _oldTypeName )
+            {
+                var newType = SyntaxFactory.ParseTypeName(_newTypeName)
+                    .WithTriviaFrom(node.Type);
+
+                var newVariables = node.Variables.Select(
+                    variable => SyntaxFactory.VariableDeclarator(variable.Identifier)
+                        .WithInitializer(variable.Initializer is null ? null :
+                        SyntaxFactory.EqualsValueClause(variable.Initializer.Value)
+                        .WithTriviaFrom(node))
+                );
+
+                node = SyntaxFactory.VariableDeclaration(newType,
+                    SyntaxFactory.SeparatedList(newVariables));
+            }
+
+            return base.VisitVariableDeclaration(node);
+        }
+#pragma warning restore CS8603 // Possible null reference return.
+    }
+
+    public class IdentifierRenamingRewriter : CSharpSyntaxRewriter
+    {
+#pragma warning disable CS8603 // Possible null reference return.
+        Dictionary<string, string> nameMapping;
+
+        public IdentifierRenamingRewriter(Dictionary<string, string> nameMapping)
+        {
+            this.nameMapping = nameMapping;
+        }
+
+        /// TODO; Add Visit for Summary Crefs.
+
+        public override SyntaxNode VisitClassDeclaration(ClassDeclarationSyntax node)
+        {
+            foreach ( var renamePair in nameMapping )
+            {
+                if ( node.Identifier.Text == renamePair.Key )
+                {
+                    node = node.ReplaceToken(node.Identifier, SyntaxFactory.Identifier(renamePair.Value)).WithTriviaFrom(node);
+                    break;
+                }
+            }
+
             return base.VisitClassDeclaration(node);
         }
 
         public override SyntaxNode VisitStructDeclaration(StructDeclarationSyntax node)
         {
-            // Loop through all the old names and check if they match the class name
-            for ( int i = 0; i < oldNames.Length; i++ )
+            foreach ( var renamePair in nameMapping )
             {
-                if ( node.Identifier.Text == oldNames[i] )
+                if ( node.Identifier.Text == renamePair.Key )
                 {
-                    // Replace it with the corresponding new name
-                    node = node.ReplaceToken(node.Identifier, SyntaxFactory.Identifier(newNames[i]));
-                    break; // Exit the loop once a match is found
+                    node = node.ReplaceToken(node.Identifier, SyntaxFactory.Identifier(renamePair.Value)).WithTriviaFrom(node);
+                    break;
                 }
             }
 
-            // Visit any nested classes
             return base.VisitStructDeclaration(node);
+        }
+
+        public override SyntaxNode VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
+        {
+            foreach ( var renamePair in nameMapping )
+            {
+                if ( node.Identifier.Text == renamePair.Key )
+                {
+                    node = node.ReplaceToken(node.Identifier, SyntaxFactory.Identifier(renamePair.Value)).WithTriviaFrom(node);
+                    break;
+                }
+            }
+
+            return base.VisitConstructorDeclaration(node);
         }
 
         public override SyntaxNode VisitVariableDeclarator(VariableDeclaratorSyntax node)
         {
-            // Loop through all the old names and check if they match the class name
-            for ( int i = 0; i < oldNames.Length; i++ )
+            foreach ( var renamePair in nameMapping )
             {
-                if ( node.Identifier.Text == oldNames[i] )
+                if ( node.Identifier.Text == renamePair.Key )
                 {
-                    // Replace it with the corresponding new name
-                    node = node.ReplaceToken(node.Identifier, SyntaxFactory.Identifier(newNames[i]));
-                    break; // Exit the loop once a match is found
+                    node = node.ReplaceToken(node.Identifier, SyntaxFactory.Identifier(renamePair.Value)).WithTriviaFrom(node);
+                    break;
                 }
             }
 
-            // Visit any nested classes
             return base.VisitVariableDeclarator(node);
         }
 
         public override SyntaxNode VisitIdentifierName(IdentifierNameSyntax node)
         {
-            // Loop through all the old names and check if they match the identifier name
-            for ( int i = 0; i < oldNames.Length; i++ )
+            foreach ( var renamePair in nameMapping )
             {
-                if ( node.Identifier.Text == oldNames[i] )
+                if ( node.Identifier.Text == renamePair.Key )
                 {
-                    // Replace it with the corresponding new name
-                    node = node.ReplaceToken(node.Identifier, SyntaxFactory.Identifier(newNames[i]));
-                    break; // Exit the loop once a match is found
+                    node = node.ReplaceToken(node.Identifier, SyntaxFactory.Identifier(renamePair.Value)).WithTriviaFrom(node);
+                    break;
                 }
             }
 
-            // Visit any other identifier names
             return base.VisitIdentifierName(node);
         }
 #pragma warning restore CS8603 // Possible null reference return.
