@@ -8,30 +8,16 @@
     <PackageLicenseFile>license.md</PackageLicenseFile>
     <AssemblyVersion>1.0</AssemblyVersion>
     <FileVersion>1.0</FileVersion>
-    <PackageReleaseNotes>First version, provides 32bit and 64bit sized blittable bitmasks with myriad helper methods to easily set flags.
-Direct use of the masks such as casting or using operators on them will maintain struct immutability. Instance extension methods mutate the mask.</PackageReleaseNotes>
+    <PackageReleaseNotes>TODO; !!!!</PackageReleaseNotes>
     <PackageTags>bitmask, blittable, unmanaged, helper, flags</PackageTags>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
     <IsPublishable>False</IsPublishable>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateDocumentationFile>False</GenerateDocumentationFile>
-    <Description>Blittable Bitmasks with 32/64 bit variants with easeofuse extension methods.
-Will compile and function with Unity Burst</Description>
+    <Description>TODO; !!!!</Description>
     <Copyright>Copyright© Juho Joensuu, licensed under MIT-License </Copyright>
     <NeutralLanguage>en-001</NeutralLanguage>
-    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <WarningLevel>5</WarningLevel>
-    <DebugType>none</DebugType>
-    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <WarningLevel>5</WarningLevel>
-    <DebugType>none</DebugType>
-    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <ItemGroup>
@@ -46,22 +32,10 @@ Will compile and function with Unity Burst</Description>
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="license.md">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-    <None Update="readme.md">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-    <None Update="Resources\license.md">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-    <None Update="Resources\readme.md">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
+    <ProjectReference 
+      Include="..\BlitMasksGenerator\BlitMasksGenerator.csproj" 
+      OutputItemType="Analyzer" 
+      ReferenceOutputAssembly="false" />
   </ItemGroup>
 
 </Project>

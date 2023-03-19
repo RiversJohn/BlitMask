@@ -3,12 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlitMasks", ".\BlitMasks\BlitMasks.csproj", "{4B48D28D-B10F-4CFC-BBFA-2C7645C864A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlitMasks", "BlitMasks\BlitMasks.csproj", "{4B48D28D-B10F-4CFC-BBFA-2C7645C864A4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", ".\BlitMaskTests\UnitTests.csproj", "{E5612A83-EB6B-4286-B819-ADFFF8755487}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "BlitMaskTests\UnitTests.csproj", "{E5612A83-EB6B-4286-B819-ADFFF8755487}"
 	ProjectSection(ProjectDependencies) = postProject
 		{4B48D28D-B10F-4CFC-BBFA-2C7645C864A4} = {4B48D28D-B10F-4CFC-BBFA-2C7645C864A4}
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlitMasksGenerator", "BlitMasksGenerator\BlitMasksGenerator.csproj", "{107A3037-2D53-4750-B5A0-B01AF36BED8D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,6 +26,10 @@ Global
 		{E5612A83-EB6B-4286-B819-ADFFF8755487}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E5612A83-EB6B-4286-B819-ADFFF8755487}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E5612A83-EB6B-4286-B819-ADFFF8755487}.Release|Any CPU.Build.0 = Release|Any CPU
+		{107A3037-2D53-4750-B5A0-B01AF36BED8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{107A3037-2D53-4750-B5A0-B01AF36BED8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{107A3037-2D53-4750-B5A0-B01AF36BED8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{107A3037-2D53-4750-B5A0-B01AF36BED8D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
