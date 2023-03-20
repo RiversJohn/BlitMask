@@ -1,13 +1,14 @@
 # BlitMasks
 Blittable BitMasks by JUHO JOENSUU
 
-This package provides a pair of blittable bitmasks with the following features:
+This package provides a Roslyn Source Generator that provides blittable bitmasks with the following features:
 
-* BitMask structs in 32bit/64bit variants
-* Both masks are blittable with member fields consisting solely of a single UInt32 or UInt64 field
+* BlitMask structs multiple bit size variants, essentially enums with flags but a Lot faster.
+* BlitMasks are fully blittable with member fields consisting solely of a backing field along with methods and operators.
+
 * BitMasks overload + - ^ ~ operators to allow add subtract exclusiveor flags from a bitmask without casting or invoking the helper methods for hot code paths.
-*	Includes quite a few constructors , can accept params int[] where each int signify flag to set, internalizes cast from enum to correct medium, casting 32 <=> 64 bit masks is unchecked and flags will be set to false for all missing/extra bits
-*	Ships with unit tests for the extension methods
+*	Includes quite a few constructors , can accept params int[] where each int signify flag to set, internalizes cast from enum to correct medium, casting masks is unchecked and flags will be set to false for all missing/extra bits
+*	Ships with unit tests for the extension methods (temporarily disabled after conversion to source generators, wip)
 *	Targets .NET 6, i may make a .NET 7 version with generic math at a later date.
 
 Who, why, design?
@@ -19,8 +20,3 @@ Who, why, design?
 *	That said, given my gamedev background and needs, the underlying type and the basic operations need to be fast enough to use 
 	tens of thousands of times per frame while being hardly noticeable on performance is the driving goal, any updates will likely prioritize
 	performance first and ease of use second.
-	
-	
-Icon included is from flaticon under Flaticon license
-
-https://www.flaticon.com/free-icons/bit" Title:bit icons | Description: Bit icons created by Futuer - Flaticon
