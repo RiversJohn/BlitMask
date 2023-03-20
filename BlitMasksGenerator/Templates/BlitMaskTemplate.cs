@@ -7,7 +7,7 @@ using System;
 using System.Globalization;
 using System.Runtime.InteropServices;
 
-namespace BlitMaskGenerators
+namespace BlitMask
 {
     [StructLayout(LayoutKind.Sequential, Pack = 0, Size = sizeof(uint))]
     public struct BlitMaskTemplate : IEquatable<BlitMaskTemplate>, IFormattable
@@ -64,7 +64,7 @@ namespace BlitMaskGenerators
             var flagLength = flags.Length;
             for ( int flag = 0; flag < flagLength; flag++ )
             {
-                _value |= BlitMaskConstantsTemplate.FirstBit << flags[flag];
+                _value |= BlitMaskConstantsTemplate.One << flags[flag];
             }
         }
 
@@ -148,6 +148,7 @@ namespace BlitMaskGenerators
         /// <param name="format">Optional <see cref="String"/> formatting expression</param>
         /// <param name="formatProvider">Optional <see cref="IFormatProvider"/></param>
         /// <returns></returns>
+#nullable enable
         public string ToString(string? format = null, IFormatProvider? formatProvider = null)
         {
             if ( string.IsNullOrWhiteSpace(format) ) format = null;
@@ -160,5 +161,6 @@ namespace BlitMaskGenerators
         {
             return obj is BlitMaskTemplate mask && Equals(mask);
         }
+#nullable disable
     }
 }

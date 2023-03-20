@@ -3,7 +3,7 @@
  * All Rights Reserved.
  */
 
-namespace BlitMaskGenerators
+namespace BlitMask
 {
     /// <summary>
     /// Provides extension methods to <see cref="BlitMaskTemplate"/> <see cref="Type"/>'s
@@ -18,7 +18,7 @@ namespace BlitMaskGenerators
         /// <returns></returns>
         public static bool HasFlag(this BlitMaskTemplate mask, int flag)
         {
-            return (mask._value & (BlitMaskConstantsTemplate.FirstBit << flag)) != BlitMaskConstantsTemplate.Zero;
+            return (mask._value & (BlitMaskConstantsTemplate.One << flag)) != BlitMaskConstantsTemplate.Zero;
         }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace BlitMaskGenerators
         /// <returns></returns>
         public static void SetFlag(this ref BlitMaskTemplate mask, int flag)
         {
-            mask._value |= (BlitMaskConstantsTemplate.FirstBit << flag);
+            mask._value |= (BlitMaskConstantsTemplate.One << flag);
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace BlitMaskGenerators
         /// <returns></returns>
         public static void ClearFlag(this ref BlitMaskTemplate mask, int flag)
         {
-            mask._value &= ~(BlitMaskConstantsTemplate.FirstBit << flag);
+            mask._value &= ~(BlitMaskConstantsTemplate.One << flag);
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace BlitMaskGenerators
         /// <returns></returns>
         public static void ToggleFlag(this ref BlitMaskTemplate mask, int flag)
         {
-            mask._value ^= (BlitMaskConstantsTemplate.FirstBit << flag);
+            mask._value ^= (BlitMaskConstantsTemplate.One << flag);
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace BlitMaskGenerators
         /// <returns></returns>
         public static void SetFlags(this ref BlitMaskTemplate mask, params int[] flags)
         {
-            mask |= new BlitMaskTemplate(flags);
+            mask._value |= new BlitMaskTemplate(flags);
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace BlitMaskGenerators
         /// <returns></returns>
         public static void ClearFlags(this ref BlitMaskTemplate mask, params int[] flags)
         {
-            mask &= ~new BlitMaskTemplate(flags);
+            mask._value &= ~new BlitMaskTemplate(flags);
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace BlitMaskGenerators
         /// <returns></returns>
         public static void ToggleFlags(this ref BlitMaskTemplate mask, params int[] flags)
         {
-            mask ^= new BlitMaskTemplate(flags);
+            mask._value ^= new BlitMaskTemplate(flags);
         }
 
         /// <summary>

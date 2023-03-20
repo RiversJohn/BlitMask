@@ -3,7 +3,7 @@
  * All Rights Reserved.
  */
 
-namespace BlitMaskGenerators
+namespace BlitMask
 {
     /// <summary>
     /// Provides <see langword="const"/> internal _value fields <see langword="value"/> to avoid typo mistakes for BlitMask classes
@@ -18,9 +18,7 @@ namespace BlitMaskGenerators
         /// <see cref="BlitMaskTemplate._value"/> <see langword="const"/> for all flags <see langword="true"/> / <see cref="uint.MaxValue"/>
         /// </summary>
         public const uint Complement = 0xFFFFFFFF;
-        /// <summary>
-        /// <see cref="BlitMaskTemplate._value"/> <see langword="const"/> for number one, for easy type setting.
-        /// </summary>
-        public const uint FirstBit = 0x00000001;
+
+        public const uint One = 1U;
     }
 }
