@@ -1,6 +1,6 @@
 ﻿/* Copyright © 2023 - Juho Veli-Matti Joensuu
  * 
- * All Rights Reserved.
+ * See the attached LICENSE.md for licensing details (MIT licensing)
  */
 
 using Microsoft.CodeAnalysis;
