@@ -254,13 +254,20 @@ namespace BlitMaskGenerators
 #pragma warning disable CS8603 // Possible null reference return.
         Dictionary<string, string> nameMapping;
 
+        /// <summary>
+        /// Rewrite <see langword="class"/>, <see langword="struct"/>, Variable and Constructor identifiers with another.
+        /// </summary>
+        /// <param name="nameMapping">Key is the identifier to replace, with Value</param>
         public IdentifierRenamingRewriter(Dictionary<string, string> nameMapping)
         {
             this.nameMapping = nameMapping;
         }
 
-        /// TODO; Add Visit for Summary Crefs.
-
+        /// <summary>
+        /// Replace a struct node identifier declaration with another, renamePair.Key will be replaced with renamePair.Value
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
         public override SyntaxNode VisitClassDeclaration(ClassDeclarationSyntax node)
         {
             foreach ( var renamePair in nameMapping )
@@ -275,6 +282,11 @@ namespace BlitMaskGenerators
             return base.VisitClassDeclaration(node);
         }
 
+        /// <summary>
+        /// Replace a struct node identifier declaration with another, renamePair.Key will be replaced with renamePair.Value
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
         public override SyntaxNode VisitStructDeclaration(StructDeclarationSyntax node)
         {
             foreach ( var renamePair in nameMapping )
@@ -289,6 +301,11 @@ namespace BlitMaskGenerators
             return base.VisitStructDeclaration(node);
         }
 
+        /// <summary>
+        /// Replace a Constructor node identifier declaration with another, renamePair.Key will be replaced with renamePair.Value
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
         public override SyntaxNode VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
         {
             foreach ( var renamePair in nameMapping )
@@ -303,6 +320,11 @@ namespace BlitMaskGenerators
             return base.VisitConstructorDeclaration(node);
         }
 
+        /// <summary>
+        /// Replace a Variable node identifier declaration with another, renamePair.Key will be replaced with renamePair.Value
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
         public override SyntaxNode VisitVariableDeclarator(VariableDeclaratorSyntax node)
         {
             foreach ( var renamePair in nameMapping )
@@ -317,6 +339,11 @@ namespace BlitMaskGenerators
             return base.VisitVariableDeclarator(node);
         }
 
+        /// <summary>
+        /// Replace a Identifier node identifier declaration with another, renamePair.Key will be replaced with renamePair.Value
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
         public override SyntaxNode VisitIdentifierName(IdentifierNameSyntax node)
         {
             foreach ( var renamePair in nameMapping )
