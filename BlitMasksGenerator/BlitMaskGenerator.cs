@@ -166,6 +166,9 @@ namespace BlitMaskGenerators
         }
     }
 
+    /// <summary>
+    /// Replaces Types identified by string, from old to new type, targets System.Convert.To operator / Variable declarations / Constructor declarations
+    /// </summary>
     public class TypeChangingRewriter : CSharpSyntaxRewriter
     {
 #pragma warning disable CS8603 // Possible null reference return.
