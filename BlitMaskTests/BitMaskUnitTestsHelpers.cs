@@ -2,7 +2,7 @@
 
 namespace BlitMaskTests
 {
-    internal static class BlitMaskUnitTestsHelpers
+    internal static class BlittableTestHelper
     {
         internal static bool IsBlittableType(Type type)
     => IsBlittablePrimitive(type)

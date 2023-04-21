@@ -145,7 +145,7 @@ namespace BlitMaskTests
         [TestMethod]
         public void IsBlittable()
         {
-            Assert.IsTrue(BlitMaskUnitTestsHelpers.IsBlittableType(typeof(BitMask)));
+            Assert.IsTrue(BlittableTestHelper.IsBlittableType(typeof(BitMask)));
         }
     }
 }
