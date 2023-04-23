@@ -11,6 +11,9 @@ This package provides a Roslyn Source Generator that provides blittable bitmasks
 *	Ships with unit tests for the extension methods (temporarily disabled after conversion to source generators, wip)
 *	Targets .NET 6, i may make a .NET 7 version with generic math at a later date.
 
+TODO;
+* Unit Tests conversion to Source Generators
+
 Who, why, design?
 *	I'm a game developer that likes to reinvent the wheel given half an excuse in need of a fast blittable boolean array for a Very hot path,
 	hence my decision to implement this tiny library, my own needs would likely have been satisfied with a few scope limited operators but 
