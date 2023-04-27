@@ -63,7 +63,7 @@ namespace BlitMaskGenerators
                         { "BlitMaskConstantsTemplate", $"BlitMaskConstants{bitSize}" },
                         { "BlitMaskExtensionsTemplate", $"BlitMaskExtensions{bitSize}" },
                         { "BlitMaskTemplate", $"BlitMask{bitSize}" },
-                        { "BlitMaskUnitTestTemplate", $"BlitMaskUnitTestTemplate{bitSize}" },
+                        { "BlitMaskUnitTestTemplate", $"BlitMaskUnitTests{bitSize}" },
                         { "ToUInt32", $"{GenerationHelpers.GetConvertMethodName(bitSize)}" },
                         { "None", $"None{bitSize}" },
                         { "Everything", $"Everything{bitSize}" }
