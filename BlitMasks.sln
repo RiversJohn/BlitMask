@@ -10,7 +10,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "BlitMaskTests\
 		{4B48D28D-B10F-4CFC-BBFA-2C7645C864A4} = {4B48D28D-B10F-4CFC-BBFA-2C7645C864A4}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlitMasksGenerator", "BlitMasksGenerator\BlitMasksGenerator.csproj", "{107A3037-2D53-4750-B5A0-B01AF36BED8D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlitMaskGenerator", "BlitMasksGenerator\BlitMaskGenerator.csproj", "{107A3037-2D53-4750-B5A0-B01AF36BED8D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

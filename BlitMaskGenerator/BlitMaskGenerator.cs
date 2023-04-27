@@ -25,7 +25,7 @@ namespace BlitMaskGenerators
         {
             //if ( !Debugger.IsAttached ) Debugger.Launch();
 
-            string templatesFolder = @"E:\Repositories\BlitMasks\BlitMasksGenerator\Templates\";
+            string templatesFolder = @"E:\Repositories\BlitMask\BlitMaskGenerator\Templates\";
             string[] templatePaths = Directory.GetFiles(templatesFolder, "*.cs");
 
             var templateSourceCode = new Dictionary<string, string>();

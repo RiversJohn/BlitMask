@@ -32,10 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference 
-      Include="..\BlitMasksGenerator\BlitMasksGenerator.csproj" 
-      OutputItemType="Analyzer" 
-      ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\BlitMaskGenerator\BlitMaskGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
 </Project>
