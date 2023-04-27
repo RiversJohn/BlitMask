@@ -3,16 +3,15 @@ Blittable BitMasks by JUHO JOENSUU
 
 This package provides a Roslyn Source Generator that provides blittable bitmasks with the following features:
 
-* BlitMask structs multiple bit size variants, essentially enums with flags but a Lot faster.
-* BlitMasks are fully blittable with member fields consisting solely of a backing field along with methods and operators.
+* BlitMask structs in multiple bit size variants, essentially enums with flags but easier and less pitfalls that cost horribly in performance.
+* BlitMasks are fully blittable with the only member field consisting solely of a backing field.
+* Especially easy to use in vectorization / arrays.
+* Now with primitive set of Unit Tests to go with them.
 
 * BitMasks overload + - ^ ~ operators to allow add subtract exclusiveor flags from a bitmask without casting or invoking the helper methods for hot code paths.
 *	Includes quite a few constructors , can accept params int[] where each int signify flag to set, internalizes cast from enum to correct medium, casting masks is unchecked and flags will be set to false for all missing/extra bits
 *	Ships with unit tests for the extension methods (temporarily disabled after conversion to source generators, wip)
 *	Targets .NET 6, i may make a .NET 7 version with generic math at a later date.
-
-TODO;
-* Unit Tests conversion to Source Generators
 
 Who, why, design?
 *	I'm a game developer that likes to reinvent the wheel given half an excuse in need of a fast blittable boolean array for a Very hot path,
