@@ -28,6 +28,12 @@ namespace BlitMaskGenerators
             string templatesFolder = @"E:\Repositories\BlitMask\BlitMaskGenerator\Templates\";
             string[] templatePaths = Directory.GetFiles(templatesFolder, "*.cs");
 
+            bool compilingUnitTests = string.IsNullOrWhiteSpace(context.Compilation.SourceModule.ReferencedAssemblySymbols.First(proj => proj.Name == "BlitMaskTests").Name) is not false;
+
+            templatePaths = compilingUnitTests ?
+                templatePaths.Where(path => path.Contains("BlitMaskUnitTestTemplate")).ToArray() :
+                templatePaths.Where(path => !path.Contains("BlitMaskUnitTestTemplate")).ToArray();
+
             var templateSourceCode = new Dictionary<string, string>();
 
             foreach ( var templatePath in templatePaths )
