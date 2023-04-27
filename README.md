@@ -7,7 +7,8 @@ This package provides a Roslyn Source Generator that provides blittable bitmasks
 * BlitMasks are fully blittable with the only member field consisting solely of a backing field.
 * Especially easy to use in vectorization / arrays.
 * Now with primitive set of Unit Tests to go with them.
-
+ 
+ 
 * BitMasks overload + - ^ ~ operators to allow add subtract exclusiveor flags from a bitmask without casting or invoking the helper methods for hot code paths.
 *	Includes quite a few constructors , can accept params int[] where each int signify flag to set, internalizes cast from enum to correct medium, casting masks is unchecked and flags will be set to false for all missing/extra bits
 *	Ships with unit tests for the extension methods (temporarily disabled after conversion to source generators, wip)
