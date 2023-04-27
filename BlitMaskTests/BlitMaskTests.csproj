@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BlitMask\BlitMask.csproj" />
+    <ProjectReference Include="..\BlitMaskGenerator\BlitMaskGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
 </Project>
