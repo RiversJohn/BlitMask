@@ -201,6 +201,41 @@ namespace BlitMaskGenerators
             return base.VisitConversionOperatorDeclaration(node);
         }
 
+        /// <summary>
+        /// Rewrite ParameterListSyntax node to replace the old type with the new type
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        public override SyntaxNode VisitParameterList(ParameterListSyntax node)
+        {
+            var newParameterList = SyntaxFactory.ParameterList().WithTriviaFrom(node);
+
+            foreach ( var parameter in node.Parameters )
+            {
+                if ( parameter.Type.ToString() == _oldTypeName )
+                {
+                    var newParameter = parameter
+                        .WithType(SyntaxFactory.ParseTypeName(_newTypeName).WithTriviaFrom(parameter.Type))
+                        .WithIdentifier(parameter.Identifier)
+                        .WithTriviaFrom(parameter);
+
+                    // Insert whitespace since SyntaxFactory.ParseTypeName doesn't preserve leading trivia.
+                    var leadingTrivia = SyntaxFactory.Whitespace(" ");
+                    newParameter = newParameter.WithLeadingTrivia(newParameter.GetLeadingTrivia().Add(leadingTrivia));
+
+                    newParameterList = newParameterList.AddParameters(newParameter);
+                }
+                else
+                {
+                    newParameterList = newParameterList.AddParameters(parameter);
+                }
+            }
+
+            node = newParameterList;
+
+            return base.VisitParameterList(node);
+        }
+
         public override SyntaxNode VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
         {
             var parameterList = node.ParameterList;
