@@ -23,12 +23,17 @@ namespace BlitMaskGenerators
 
         public void Execute(GeneratorExecutionContext context)
         {
-            //if ( !Debugger.IsAttached ) Debugger.Launch();
+            //if ( !System.Diagnostics.Debugger.IsAttached ) System.Diagnostics.Debugger.Launch();
 
             string templatesFolder = @"E:\Repositories\BlitMask\BlitMaskGenerator\Templates\";
             string[] templatePaths = Directory.GetFiles(templatesFolder, "*.cs");
 
-            bool compilingUnitTests = string.IsNullOrWhiteSpace(context.Compilation.SourceModule.ReferencedAssemblySymbols.First(proj => proj.Name == "BlitMaskTests").Name) is not false;
+            if ( !context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.projectdir", out var projectDirectory) )
+            {
+                throw new KeyNotFoundException("Could not find project directory");
+            }
+
+            bool compilingUnitTests = projectDirectory.Contains("BlitMaskTests");
 
             templatePaths = compilingUnitTests ?
                 templatePaths.Where(path => path.Contains("BlitMaskUnitTestTemplate")).ToArray() :
@@ -58,6 +63,7 @@ namespace BlitMaskGenerators
                         { "BlitMaskConstantsTemplate", $"BlitMaskConstants{bitSize}" },
                         { "BlitMaskExtensionsTemplate", $"BlitMaskExtensions{bitSize}" },
                         { "BlitMaskTemplate", $"BlitMask{bitSize}" },
+                        { "BlitMaskUnitTestTemplate", $"BlitMaskUnitTestTemplate{bitSize}" },
                         { "ToUInt32", $"{GenerationHelpers.GetConvertMethodName(bitSize)}" },
                         { "None", $"None{bitSize}" },
                         { "Everything", $"Everything{bitSize}" }
