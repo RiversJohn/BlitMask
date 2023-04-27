@@ -13,7 +13,7 @@ namespace BlitMask
     public struct BlitMaskTemplate : IEquatable<BlitMaskTemplate>, IFormattable
     {
         /// <returns><see cref="Type"/> of the underlying data backing field</returns>
-        public static Type GetUnderlyingType() => typeof(uint);
+        public static Type GetUnderlyingType => typeof(uint);
 
         /// <summary>
         /// The underlying value of the <see cref="BlitMaskTemplate"/>
