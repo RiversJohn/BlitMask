@@ -224,7 +224,7 @@ namespace BlitMaskGenerators
 
             foreach ( var parameter in node.Parameters )
             {
-                if ( parameter.Type.ToString() == _oldTypeName )
+                if ( parameter.Type?.ToString() == _oldTypeName )
                 {
                     var newParameter = parameter
                         .WithType(SyntaxFactory.ParseTypeName(_newTypeName).WithTriviaFrom(parameter.Type))
@@ -256,7 +256,7 @@ namespace BlitMaskGenerators
 
             foreach ( var parameter in parameterList.Parameters )
             {
-                if ( parameter.Type.ToString() == _oldTypeName )
+                if ( parameter.Type?.ToString() == _oldTypeName )
                 {
                     var newParameter = parameter
                         .WithType(SyntaxFactory.ParseTypeName(_newTypeName).WithTriviaFrom(parameter.Type))
