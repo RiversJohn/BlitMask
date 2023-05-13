@@ -48,9 +48,9 @@ namespace BlitMaskGenerators
                 templateSourceCode.Add(templatePath, fileContents);
             }
 
-            List<int> SupportedBitSizes = new List<int>() { 32, 64 };
+            List<int> SupportedBitSizes = new() { 32, 64 };
 
-            Dictionary<string, string> pathAndSourceCode = new Dictionary<string, string>();
+            Dictionary<string, string> pathAndSourceCode = new();
 
             foreach ( var template in templateSourceCode )
             {
@@ -58,7 +58,7 @@ namespace BlitMaskGenerators
                 {
                     var rootNode = (CompilationUnitSyntax)CSharpSyntaxTree.ParseText(template.Value, CSharpParseOptions.Default, template.Key, Encoding.UTF8).GetRoot(context.CancellationToken);
 
-                    Dictionary<string, string> renameMap = new Dictionary<string, string>
+                    Dictionary<string, string> renameMap = new()
                     {
                         { "BlitMaskConstantsTemplate", $"BlitMaskConstants{bitSize}" },
                         { "BlitMaskExtensionsTemplate", $"BlitMaskExtensions{bitSize}" },
@@ -87,7 +87,7 @@ namespace BlitMaskGenerators
                         .Replace(@"0xFFFFFFFF", GenerationHelpers.GetHexValueForMax(bitSize))
                         .Replace("1U", GenerationHelpers.GetValueForOne(bitSize));
 
-                    string fileName = Path.GetFileNameWithoutExtension(template.Key.Replace("Template", $"{bitSize.ToString()}"));
+                    string fileName = Path.GetFileNameWithoutExtension(template.Key.Replace("Template", $"{bitSize}"));
                     string fileHint = fileName + ".g.cs";
 
                     pathAndSourceCode.Add(fileHint, sourceCode);
@@ -105,26 +105,26 @@ namespace BlitMaskGenerators
     {
         public static string GetHexValueForZero(int bitSize)
         {
-            switch ( bitSize )
+            return bitSize switch
             {
-                case 8: return "0x00";
-                case 16: return "0x0000";
-                case 32: return "0x00000000";
-                case 64: return "0x0000000000000000";
-                default: throw new ArgumentException($"Unsupported bit size: {bitSize}", nameof(bitSize));
-            }
+                8 => "0x00",
+                16 => "0x0000",
+                32 => "0x00000000",
+                64 => "0x0000000000000000",
+                _ => throw new ArgumentException($"Unsupported bit size: {bitSize}", nameof(bitSize)),
+            };
         }
 
         public static string GetHexValueForMax(int bitSize)
         {
-            switch ( bitSize )
+            return bitSize switch
             {
-                case 8: return "0xFF";
-                case 16: return "0xFFFF";
-                case 32: return "0xFFFFFFFF";
-                case 64: return "0xFFFFFFFFFFFFFFFF";
-                default: throw new ArgumentException($"Unsupported bit size: {bitSize}", nameof(bitSize));
-            }
+                8 => "0xFF",
+                16 => "0xFFFF",
+                32 => "0xFFFFFFFF",
+                64 => "0xFFFFFFFFFFFFFFFF",
+                _ => throw new ArgumentException($"Unsupported bit size: {bitSize}", nameof(bitSize)),
+            };
         }
 
         /// <summary>
@@ -138,43 +138,38 @@ namespace BlitMaskGenerators
         /// <exception cref="ArgumentException"></exception>
         public static string GetValueForOne(int bitSize)
         {
-            switch ( bitSize )
+            return bitSize switch
             {
-                case 8: return "0b00000001";
-                case 16: return "0x0001";
-                case 32: return "1U";
-                case 64: return "1UL";
-                default: throw new ArgumentException($"Unsupported bit size: {bitSize}", nameof(bitSize));
-            }
+                8 => "0b00000001",
+                16 => "0x0001",
+                32 => "1U",
+                64 => "1UL",
+                _ => throw new ArgumentException($"Unsupported bit size: {bitSize}", nameof(bitSize)),
+            };
         }
 
         public static string GetConvertMethodName(int bitSize)
         {
-            switch ( bitSize )
+            return bitSize switch
             {
-                case 8:
-                    return "ToByte";
-                case 16:
-                    return "ToUInt16";
-                case 32:
-                    return "ToUInt32";
-                case 64:
-                    return "ToUInt64";
-                default:
-                    throw new ArgumentException("Invalid bit size", nameof(bitSize));
-            }
+                8 => "ToByte",
+                16 => "ToUInt16",
+                32 => "ToUInt32",
+                64 => "ToUInt64",
+                _ => throw new ArgumentException("Invalid bit size", nameof(bitSize)),
+            };
         }
 
         public static string MapBitSizeToType(int bitSize)
         {
-            switch ( bitSize )
+            return bitSize switch
             {
-                case 8: return "byte";
-                case 16: return "ushort";
-                case 32: return "uint";
-                case 64: return "ulong";
-                default: throw new ArgumentException($"Unsupported bit size: {bitSize}", nameof(bitSize));
-            }
+                8 => "byte",
+                16 => "ushort",
+                32 => "uint",
+                64 => "ulong",
+                _ => throw new ArgumentException($"Unsupported bit size: {bitSize}", nameof(bitSize)),
+            };
         }
     }
 
@@ -184,8 +179,8 @@ namespace BlitMaskGenerators
     public class TypeChangingRewriter : CSharpSyntaxRewriter
     {
 #pragma warning disable CS8603 // Possible null reference return.
-        private string _oldTypeName;
-        private string _newTypeName;
+        private readonly string _oldTypeName;
+        private readonly string _newTypeName;
 
         public TypeChangingRewriter(string templateType, string replaceWithType)
         {
@@ -302,7 +297,7 @@ namespace BlitMaskGenerators
     public class IdentifierRenamingRewriter : CSharpSyntaxRewriter
     {
 #pragma warning disable CS8603 // Possible null reference return.
-        Dictionary<string, string> nameMapping;
+        readonly Dictionary<string, string> nameMapping;
 
         /// <summary>
         /// Rewrite <see langword="class"/>, <see langword="struct"/>, Variable and Constructor identifiers with another.
