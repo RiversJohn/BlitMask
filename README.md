@@ -11,7 +11,7 @@ This package provides a Roslyn Source Generator that provides blittable bitmasks
  
 * BitMasks overload + - ^ ~ operators to allow add subtract exclusiveor flags from a bitmask without casting or invoking the helper methods for hot code paths.
 *	Includes quite a few constructors , can accept params int[] where each int signify flag to set, internalizes cast from enum to correct medium, casting masks is unchecked and flags will be set to false for all missing/extra bits
-*	Ships with unit tests for the extension methods (temporarily disabled after conversion to source generators, wip)
+*	Ships with unit tests for the extension methods
 *	Targets .NET 6, i may make a .NET 7 version with generic math at a later date.
 
 Who, why, design?
